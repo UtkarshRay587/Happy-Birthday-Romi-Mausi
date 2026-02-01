@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Birthday Mausi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Poppins;background:#000;color:#fff;overflow:hidden}
+.hidden{display:none}
+.center{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+h1{font-family:'Playfair Display';font-size:2.4rem;text-shadow:0 0 25px gold}
+button,input{padding:14px 26px;border-radius:30px;border:none;margin-top:20px;font-size:15px}
+button{background:linear-gradient(135deg,gold,orange)}
+.scroll{max-height:55vh;overflow:auto;padding:15px;line-height:1.8}
+.scroll::-webkit-scrollbar{display:none}
+.candle{width:60px;height:110px;background:#fff;margin:18px auto;position:relative}
+.flame{width:18px;height:26px;background:orange;border-radius:50%;position:absolute;top:-26px;left:21px;animation:flicker .3s infinite}
+@keyframes flicker{0%{transform:scale(1)}50%{transform:scale(.8)}100%{transform:scale(1)}}
+canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none}
+</style>
+</head>
+<body>
+
+<canvas id="fireworks"></canvas>
+<audio id="music" src="song.wav" loop></audio>
+
+<div class="center" id="lock">
+<h1>🔒 A Beautiful Surprise</h1>
+<input type="password" id="pass" placeholder="Enter Password">
+<button id="unlockBtn">Unlock</button>
+</div>
+
+<div class="center hidden" id="main">
+<h1>Happy Birthday<br>Mausi 🎉</h1>
+
+<div class="scroll">
+<p>
+Dear Mausi,<br><br>
+This day celebrates your warmth, kindness, and the peace you bring to everyone’s life.<br><br>
+May your heart stay light, your smile stay bright,
+and your life be filled with love and respect.<br><br>
+You are deeply loved — always 💛
+</p>
+</div>
+
+<div class="candle" id="candle">
+<div class="flame" id="flame"></div>
+</div>
+<p><i>Tap the candle & make a wish ✨</i></p>
+</div>
+
+<script>
+const lockScreen=document.getElementById("lock");
+const mainScreen=document.getElementById("main");
+const passInput=document.getElementById("pass");
+const music=document.getElementById("music");
+const unlockBtn=document.getElementById("unlockBtn");
+const flame=document.getElementById("flame");
+
+unlockBtn.addEventListener("click",()=>{
+  if(passInput.value==="YouAreBeautiful"){
+    lockScreen.classList.add("hidden");
+    mainScreen.classList.remove("hidden");
+    music.play().catch(()=>{});
+  }else{
+    alert("Wrong password 🌙");
+  }
+});
+
+document.getElementById("candle").addEventListener("click",()=>{
+  flame.style.display="none";
+});
+
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let fireworks=[];
+function Firework(){
+  this.x=Math.random()*canvas.width;
+  this.y=canvas.height;
+  this.vy=Math.random()*-6-4;
+  this.life=60;
+  this.color=`hsl(${Math.random()*360},100%,60%)`;
+}
+Firework.prototype.update=function(){
+  this.y+=this.vy;
+  this.life--;
+};
+Firework.prototype.draw=function(){
+  ctx.beginPath();
+  ctx.arc(this.x,this.y,2,0,Math.PI*2);
+  ctx.fillStyle=this.color;
+  ctx.fill();
+};
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(Math.random()<0.05)fireworks.push(new Firework());
+  fireworks.forEach((f,i)=>{
+    f.update();
+    f.draw();
+    if(f.life<=0)fireworks.splice(i,1);
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
